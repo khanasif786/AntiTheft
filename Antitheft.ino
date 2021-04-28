@@ -1,12 +1,21 @@
-#include <TinyGPS++.h>
-#include <SoftwareSerial.h>
-TinyGPSPlus gps;
+/* This is a prototype Only and Extandable to many useful automations
+   so a button is used over sensors to demonstrate that as a sensor giving
+   0 or 1 , to properly use a Button it is necessary to Use debounce code*/
+// Author: Asif Khan
+// github: AsifkhanYT
+
+#include <TinyGPS++.h> // GPS library
+#include <SoftwareSerial.h> // serial communication Library
+#define Button 7
+#define Alarm 4
+TinyGPSPlus gps; // using Tiny gps as gps
 SoftwareSerial gsm(9, 10); // RX TX For Arduino , TX RX for GSM module
-SoftwareSerial gpsSerial(2, 3);
+SoftwareSerial gpsSerial(2, 3); // gps serial at pin 2 and 3
 
 char str[100] ;
 String textMessage;
 int  i ;
+// variables for Debouncing of Button
 unsigned long PreviousTime ;
 unsigned long CurrentTime ;
 long DebounceDelay = 100 ;
@@ -15,13 +24,13 @@ int MessageJustSent = 0 ;
 int ButtonState = 1 ;
 
 void setup() {
-  pinMode(7, INPUT);
-  pinMode(4, OUTPUT);
+  pinMode(Button, INPUT);
+  pinMode(Alarm, OUTPUT);
   gsm.begin(9600);   // Setting the baud rate of GSM Module
   delay(100);
-  Serial.begin(9600);    // Setting the baud rate of Serial Monitor (Arduino)
+  Serial.begin(9600); // only for testing purpose  // Setting the baud rate of Serial Monitor (Arduino)
   delay(100);
-  gpsSerial.begin(9600);
+  gpsSerial.begin(9600); // setting the baud rate of gps serial
   delay(100);
   gsm.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
   delay(1000);  // Delay of 1000 milli seconds or 1 second
@@ -30,7 +39,7 @@ void setup() {
 
 void loop() {
 
-  ButtonState =  digitalRead(7) ;
+  ButtonState =  digitalRead(Button) ;
 
   if (gps.encode(gpsSerial.read())) {
     if (gps.location.isValid())
@@ -68,12 +77,12 @@ void loop() {
   }
 
   if (textMessage.indexOf("ALARM ON") >= 0 ) {
-    digitalWrite(4, LOW);
+    digitalWrite(Alarm, LOW);
     textMessage = "NUL"  ;
   }
 
   else if (textMessage.indexOf("ALARM OFF") >= 0 ) {
-    digitalWrite(4, HIGH);
+    digitalWrite(Alarm, HIGH);
     textMessage = "NUL"  ;
   }
 
@@ -85,7 +94,7 @@ void loop() {
 
 void SendMessage() {
   delay(2000);
-  gsm.println("AT+CMGS=\"+917375879382\"\r"); // Replace x with mobile number
+  gsm.println("AT+CMGS=\"xxxxxxxxxx\"\r"); // Replace xxxxxxxxxx with mobile number
   delay(1000);
   gsm.println("Your vehicle is Started at this location Click:");
   delay(100);
@@ -111,7 +120,7 @@ void SendMessage() {
 }
 
 void SendLocation() {
-  gsm.println("AT+CMGS=\"+917375879382\"\r"); // Replace x with mobile number
+  gsm.println("AT+CMGS=\"+xxxxxxxxxx\"\r"); // Replace x with mobile number
   delay(1000);
   gsm.print("http://maps.google.com/maps?q=loc:");// The SMS text you want to send
   delay(100);
