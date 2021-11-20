@@ -2,7 +2,7 @@
    so a button is used over sensors to demonstrate that as a sensor giving
    0 or 1 , to properly use a Button it is necessary to Use debounce code*/
 // Author: Asif Khan
-// github: AsifkhanYT
+// github: khanasif786
 
 #include <TinyGPS++.h> // GPS library
 #include <SoftwareSerial.h> // serial communication Library
